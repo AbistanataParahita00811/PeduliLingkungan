@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Uploads Disk
+    |--------------------------------------------------------------------------
+    |
+    | Disk yang digunakan untuk upload gambar (banner, event, galeri, dll).
+    | Secara default menggunakan disk "public". Untuk production di Vercel
+    | atau lingkungan lain, Anda bisa mengubahnya ke "s3" atau disk lain
+    | melalui env UPLOADS_DISK.
+    |
+    */
+
+    'uploads_disk' => env('UPLOADS_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

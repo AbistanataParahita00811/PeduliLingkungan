@@ -16,32 +16,44 @@ class ImageUploadService
     public const AVATARS = 400;
 
     protected ImageManager $manager;
+    protected string $disk;
 
     public function __construct()
     {
         $this->manager = new ImageManager(new Driver());
+        $this->disk = config('filesystems.uploads_disk', 'public');
     }
 
     public function upload(UploadedFile $file, string $directory, int $maxWidth, int $quality = 80): string
     {
-        $image = $this->manager->read($file->getPathname());
+        // Jika menggunakan disk lokal "public", lakukan resize + konversi WebP seperti sebelumnya.
+        if ($this->disk === 'public') {
+            $image = $this->manager->read($file->getPathname());
 
-        if ($image->width() > $maxWidth) {
-            $image->scale(width: $maxWidth);
+            if ($image->width() > $maxWidth) {
+                $image->scale(width: $maxWidth);
+            }
+
+            $filename = uniqid() . '.webp';
+            $path = rtrim($directory, '/') . '/' . $filename;
+
+            $encoded = $image->toWebp(quality: $quality);
+
+            Storage::disk($this->disk)->put($path, (string) $encoded);
+
+            return $path;
         }
 
-        $filename = uniqid() . '.webp';
-        $path = rtrim($directory, '/') . '/' . $filename;
-
-        $encoded = $image->toWebp(quality: $quality);
-
-        Storage::disk('public')->put($path, (string) $encoded);
-
-        return $path;
+        // Jika menggunakan disk lain (misal S3 / Cloudinary), simpan file apa adanya
+        // dan biarkan layanan eksternal yang mengatur optimasi.
+        return $file->store(
+            rtrim($directory, '/'),
+            $this->disk
+        );
     }
 
     public function delete(string $path): bool
     {
-        return Storage::disk('public')->delete($path);
+        return Storage::disk($this->disk)->delete($path);
     }
 }

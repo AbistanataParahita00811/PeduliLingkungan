@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] { display: none !important; }
+
+@layer base {
+    :root {
+        --forest: #1a3a2a;
+        --moss: #2d5a3d;
+        --leaf: #4a9e6b;
+        --lime: #7ecb5f;
+        --spring: #b8e994;
+        --cream: #f5f0e8;
+    }
+
+    body {
+        @apply bg-cream text-forest;
+    }
+
+    /* Scroll reveal: hanya sembunyikan jika JS sudah siap (body.rv-ready) */
+    .rv {
+        @apply transition-all duration-700 ease-out;
+        transition-property: opacity, transform;
+    }
+
+    body.rv-ready .rv {
+        @apply opacity-0 translate-y-8;
+    }
+
+    body.rv-ready .rv.rv-visible,
+    .rv.rv-visible {
+        @apply opacity-100 translate-y-0;
+    }
+
+    /* Floating leaves animation */
+    @keyframes float-leaf {
+        0%, 100% {
+            transform: translateY(0) translateX(0) rotate(-8deg);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-20px) translateX(10px) rotate(6deg);
+            opacity: 0.9;
+        }
+    }
+
+    .floating-leaf {
+        @apply absolute text-2xl sm:text-3xl pointer-events-none select-none;
+        animation: float-leaf 6s ease-in-out infinite;
+    }
+
+    /* Smooth scroll */
+    html {
+        scroll-behavior: smooth;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
+        .floating-leaf {
+            animation: none;
+        }
+    }
+}
+
+@layer components {
+    .nav-link {
+        @apply text-xs font-medium tracking-wide text-white/70 hover:text-white relative;
+    }
+
+    .nav-link::after {
+        content: '';
+        @apply absolute left-0 -bottom-1 w-0 h-px bg-lime transition-all;
+    }
+
+    .nav-link:hover::after {
+        @apply w-full;
+    }
+
+    .mobile-nav-link {
+        @apply block py-1 text-white/80;
+    }
+
+    .footer-title {
+        @apply text-xs font-semibold tracking-[0.2em] uppercase text-spring/70 mb-4;
+    }
+
+    .footer-link {
+        @apply hover:text-white transition-colors;
+    }
+
+    .social-icon {
+        @apply w-9 h-9 rounded-xl bg-white/5 border border-white/15 flex items-center justify-center text-lg hover:bg-white/10 transition;
+    }
+
+    .section-eyebrow {
+        @apply text-[11px] tracking-[0.25em] uppercase text-leaf;
+    }
+
+    /* Smooth hover untuk cards */
+    #events article,
+    #why-join .rounded-3xl,
+    #articles article {
+        @apply transition-all duration-300 ease-out;
+    }
+
+    /* Touch-friendly: minimal 44px tap target */
+    .tap-target {
+        @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    }
+}
+
+/* Safe area untuk floating button di mobile */
+.wa-float {
+    bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px));
+    right: calc(1.25rem + env(safe-area-inset-right, 0px));
+}
+
+/* Navbar scroll state */
+#main-nav.nav-scrolled {
+    @apply bg-forest/95 shadow-md border-b border-white/5 py-3;
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #f5f0e8; }
+::-webkit-scrollbar-thumb { background: #4a9e6b; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2d5a3d; }
+
+/* Tailwind utilities */
+@layer components {
+    .btn-primary { @apply inline-flex items-center justify-center rounded-full bg-lime text-forest font-semibold px-6 py-3 shadow-lg shadow-lime/30 hover:shadow-xl hover:-translate-y-0.5 transition-all; }
+    .btn-secondary { @apply inline-flex items-center justify-center rounded-full border-2 border-white/25 text-white px-5 py-3 hover:bg-white/10 transition; }
+    .btn-admin { @apply inline-flex items-center justify-center rounded-lg bg-forest text-white px-4 py-2 hover:bg-moss transition; }
+    .btn-danger { @apply inline-flex items-center justify-center rounded-lg bg-red-600 text-white px-4 py-2 hover:bg-red-700 transition; }
+    .card { @apply bg-white rounded-2xl shadow-sm border border-gray-100; }
+    .card-admin { @apply bg-white rounded-xl shadow-sm p-6; }
+    .badge { @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold; }
+    .badge-green { @apply bg-green-100 text-green-800; }
+    .badge-yellow { @apply bg-yellow-100 text-yellow-800; }
+    .badge-red { @apply bg-red-100 text-red-800; }
+    .badge-gray { @apply bg-gray-100 text-gray-600; }
+    .input-field { @apply w-full border border-gray-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-leaf focus:border-transparent; }
+    .label-field { @apply block text-sm font-semibold text-gray-700 mb-1.5; }
+    .section-label { @apply text-leaf text-xs font-bold tracking-[2px] uppercase flex items-center gap-2 before:content-[''] before:w-[30px] before:h-[2px] before:bg-leaf; }
+}
+

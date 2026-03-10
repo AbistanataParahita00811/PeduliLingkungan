@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreGalleryRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'string'],
+            'image' => ['required', 'image', 'max:2048'],
+            'caption' => ['nullable', 'string'],
+            'event_id' => ['nullable', 'exists:events,id'],
+            'is_featured' => ['nullable', 'boolean'],
+            'order_index' => ['nullable', 'integer'],
+        ];
+    }
+}
